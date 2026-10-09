@@ -1,27 +1,40 @@
-// Basic demo for readings from Adafruit BNO08x
+// BNO085からSPIでセンサーレポートを取得するサンプル。
 #include <Adafruit_BNO08x.h>
 #include <SPI.h>
 
-// For SPI mode, we need a CS pin
+// CS・INT・RSTは使用ボードの実際の配線に合わせて変更する。
 #define BNO08X_CS 10
-#define BNO08X_INT 9
+#define BNO08X_INT 2
+#define BNO08X_RESET 7
 
-// SPI requires RST. Match CS/INT/RST to your actual wiring.
-#define BNO08X_RESET 5
+// 調整する値（時間の単位に注意）。
+#define SERIAL_BAUD_RATE 115200
+#define SERIAL_WAIT_DELAY_MS 10
+#define SENSOR_ERROR_DELAY_MS 10
+#define SENSOR_STARTUP_DELAY_MS 100
+// SCK/MISO/MOSIはボード標準のSPI端子を使用する。
+// ピン番号をここで変更することはできないため、ボードのピン配置を確認する。
+#define REPORT_INTERVAL_US 10000  // レポート要求周期: 10,000 µs = 10 ms
+#define LOOP_DELAY_MS 10
 
-Adafruit_BNO08x  bno08x(BNO08X_RESET);
+Adafruit_BNO08x bno08x(BNO08X_RESET);
 sh2_SensorValue_t sensorValue;
 
 void setup(void) {
-  Serial.begin(115200);
-  while (!Serial) delay(10);     // will pause Zero, Leonardo, etc until serial console opens
+  Serial.begin(SERIAL_BAUD_RATE);
+  // シリアルモニタが開くまで待機する。
+  while (!Serial) {
+    delay(SERIAL_WAIT_DELAY_MS);
+  }
 
   Serial.println("Adafruit BNO08x test!");
 
-  // Use the board default hardware SPI pins for SCK/MISO/MOSI.
+  // SCK・MISO・MOSIはボード標準のSPI端子を使用する。
   if (!bno08x.begin_SPI(BNO08X_CS, BNO08X_INT, &SPI)) {
     Serial.println("Failed to find BNO08x chip");
-    while (1) { delay(10); }
+    while (1) {
+      delay(SENSOR_ERROR_DELAY_MS);
+    }
   }
   Serial.println("BNO08x Found!");
 
@@ -41,32 +54,30 @@ void setup(void) {
   setReports();
 
   Serial.println("Reading events");
-  delay(100);
+  delay(SENSOR_STARTUP_DELAY_MS);
 }
 
-// Here is where you define the sensor outputs you want to receive
+// 受信するレポートを有効化する。センサーのリセット後にも呼び出す。
 void setReports(void) {
   Serial.println("Setting desired reports");
-  if (! bno08x.enableReport(SH2_GAME_ROTATION_VECTOR)) {
+  if (!bno08x.enableReport(SH2_GAME_ROTATION_VECTOR, REPORT_INTERVAL_US)) {
     Serial.println("Could not enable game vector");
   }
 }
 
-
 void loop() {
-  delay(10);
+  delay(LOOP_DELAY_MS);
 
   if (bno08x.wasReset()) {
     Serial.print("sensor was reset ");
     setReports();
   }
-  
-  if (! bno08x.getSensorEvent(&sensorValue)) {
+
+  if (!bno08x.getSensorEvent(&sensorValue)) {
     return;
   }
-  
+
   switch (sensorValue.sensorId) {
-    
     case SH2_GAME_ROTATION_VECTOR:
       Serial.print("Game Rotation Vector - r: ");
       Serial.print(sensorValue.un.gameRotationVector.real);
@@ -78,5 +89,4 @@ void loop() {
       Serial.println(sensorValue.un.gameRotationVector.k);
       break;
   }
-
 }
