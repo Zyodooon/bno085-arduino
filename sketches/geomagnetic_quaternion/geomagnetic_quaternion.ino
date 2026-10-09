@@ -52,9 +52,7 @@ void setup() {
 void loop() {
   if (bno08x.wasReset()) {
     ++resetCount;
-    Serial.print(F("RESET / t[ms]="));
-    Serial.print(millis());
-    Serial.print(F(" / count="));
+    Serial.print(F("RESET count : "));
     Serial.println(resetCount);
     hasPrinted = false;
     setReports();
@@ -67,17 +65,14 @@ void loop() {
   if (hasPrinted && nowMs - lastPrintMs < PRINT_INTERVAL_MS) { return; }
   lastPrintMs = nowMs;
   hasPrinted = true;
-  Serial.print(F("t[ms]="));
-  Serial.print(nowMs);
-  Serial.print(F("\tw[unitless]="));
+  Serial.print(F("geomagnetic_quaternion [unitless] : "));
+  Serial.print(F("w="));
   Serial.print(sensorValue.un.geoMagRotationVector.real, DECIMAL_PLACES);
-  Serial.print(F("\tx[unitless]="));
+  Serial.print(F("\tx="));
   Serial.print(sensorValue.un.geoMagRotationVector.i, DECIMAL_PLACES);
-  Serial.print(F("\ty[unitless]="));
+  Serial.print(F("\ty="));
   Serial.print(sensorValue.un.geoMagRotationVector.j, DECIMAL_PLACES);
-  Serial.print(F("\tz[unitless]="));
+  Serial.print(F("\tz="));
   Serial.print(sensorValue.un.geoMagRotationVector.k, DECIMAL_PLACES);
-  Serial.print(F("\taccuracy[0-3]="));
-  Serial.print(sensorValue.status);
   Serial.println();
 }

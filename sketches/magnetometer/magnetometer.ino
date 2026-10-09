@@ -64,9 +64,7 @@ void setup() {
 void loop() {
   if (bno08x.wasReset()) {
     ++resetCount;
-    Serial.print(F("RESET / t[ms]="));
-    Serial.print(millis());
-    Serial.print(F(" / count="));
+    Serial.print(F("RESET count : "));
     Serial.println(resetCount);
     hasPrinted = false;
     setReports();
@@ -79,15 +77,12 @@ void loop() {
   if (hasPrinted && nowMs - lastPrintMs < PRINT_INTERVAL_MS) { return; }
   lastPrintMs = nowMs;
   hasPrinted = true;
-  Serial.print(F("t[ms]="));
-  Serial.print(nowMs);
-  Serial.print(F("\tx[uT]="));
+  Serial.print(F("magnetometer [uT] : "));
+  Serial.print(F("x="));
   Serial.print(sensorValue.un.magneticField.x, DECIMAL_PLACES);
-  Serial.print(F("\ty[uT]="));
+  Serial.print(F("\ty="));
   Serial.print(sensorValue.un.magneticField.y, DECIMAL_PLACES);
-  Serial.print(F("\tz[uT]="));
+  Serial.print(F("\tz="));
   Serial.print(sensorValue.un.magneticField.z, DECIMAL_PLACES);
-  Serial.print(F("\taccuracy[0-3]="));
-  Serial.print(sensorValue.status);
   Serial.println();
 }
