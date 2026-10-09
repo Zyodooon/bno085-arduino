@@ -18,7 +18,7 @@
 | define | 内容 | 初期値 |
 |---|---|---|
 | `SERIAL_BAUD_RATE` | シリアル通信速度。IDE側の設定も合わせる | 115200 |
-| `REPORT_INTERVAL_US` | センサーへのレポート要求周期（µs） | 10000（100Hz） |
+| `REPORT_INTERVAL_US` | センサーへのレポート要求周期（µs） | 5000（200Hz） |
 | `PRINT_INTERVAL_MS` | 受信した値を表示する最短間隔（ms） | 100（最大10行/秒） |
 | `DECIMAL_PLACES` | 小数点以下の表示桁数 | 4 |
 | `BNO08X_CS` / `BNO08X_INT` / `BNO08X_RESET` | SPI制御ピン | 10 / 2 / 7 |

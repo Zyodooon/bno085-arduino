@@ -13,7 +13,7 @@
 //
 // ===== 変更する設定（周期は単位に注意） =====
 #define SERIAL_BAUD_RATE 115200
-#define REPORT_INTERVAL_US 10000UL  // センサーへの要求周期: 10 ms = 100 Hz
+#define REPORT_INTERVAL_US 5000UL  // センサーへの要求周期: 5 ms = 200 Hz
 #define PRINT_INTERVAL_MS 100UL     // 画面への表示周期: 100 ms = 最大10行/秒
 #define DECIMAL_PLACES 4            // 小数点以下の表示桁数
 #define BNO08X_CS 10
