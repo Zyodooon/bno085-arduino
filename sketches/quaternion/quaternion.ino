@@ -21,13 +21,14 @@
 #endif
 
 Adafruit_BNO08x bno08x(BNO08X_RESET);
-sh2_SensorValue_t sensorValue;
+sh2_SensorValue_t sensorValue;  // センサーから受け取ったレポート
 uint32_t lastPrintMs = 0;
-uint32_t lastSampleUs = 0;
+uint32_t lastSampleUs = 0;      // 前回データを受信した時刻
 uint32_t resetCount = 0;
 bool hasPrinted = false;
-bool hasSample = false;
+bool hasSample = false;         // 前回時刻があり、間隔を計算できるか
 
+// Rotation Vectorレポートを指定周期で出すようセンサーに要求する。
 void setReports() {
   if (!bno08x.enableReport(SH2_ROTATION_VECTOR, REPORT_INTERVAL_US)) {
     Serial.println(F("ERROR: could not enable quaternion report"));
@@ -46,6 +47,7 @@ void setup() {
   Serial.print(F("Print interval [ms]: "));
   Serial.println(PRINT_INTERVAL_MS);
 #endif
+  // CS・INTピンを使ってSPI通信を開始する。
   if (!bno08x.begin_SPI(BNO08X_CS, BNO08X_INT, &SPI)) {
     Serial.println(F("ERROR: failed to find BNO08x chip"));
     while (true) { delay(10); }
@@ -59,6 +61,7 @@ void setup() {
 }
 
 void loop() {
+  // センサーがリセットされたら、レポート設定をやり直す。
   if (bno08x.wasReset()) {
     ++resetCount;
 #if !PLOT_INTERVALS
@@ -72,6 +75,7 @@ void loop() {
       sensorValue.sensorId != SH2_ROTATION_VECTOR) {
     return;
   }
+  // PLOT_INTERVALS=1では受信間隔を出力する。
   const uint32_t nowUs = micros();
 #if PLOT_INTERVALS
   if (hasSample) {
@@ -80,6 +84,7 @@ void loop() {
   lastSampleUs = nowUs;
   hasSample = true;
 #else
+  // 通常表示では、受信を続けたまま表示だけを間引く。
   const uint32_t nowMs = millis();
   if (hasPrinted && nowMs - lastPrintMs < PRINT_INTERVAL_MS) { return; }
   lastPrintMs = nowMs;
