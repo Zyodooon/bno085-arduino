@@ -13,7 +13,7 @@ bno085-bringup/
 │   ├── adafruit-bno085-guide.pdf
 │   ├── bno08x-ceva-datasheet.pdf
 │   └── bno085-summary-ja.md
-├── sketches/                          データごとの動作確認用スケッチ
+├── sketches/                          動作確認用スケッチ・SPI参考サンプル
 │   ├── README.md                      各スケッチの説明・設定方法
 │   ├── accelerometer/
 │   │   └── accelerometer.ino          加速度
@@ -25,12 +25,14 @@ bno085-bringup/
 │   │   └── quaternion.ino             Rotation Vector
 │   ├── game_quaternion/
 │   │   └── game_quaternion.ino        Game Rotation Vector
-│   └── geomagnetic_quaternion/
-│       └── geomagnetic_quaternion.ino Geomagnetic Rotation Vector
-├── src/                               SPI接続用に変更した参考サンプル
-│   ├── rotation_vector_spi_reference.ino
-│   ├── quaternion_yaw_pitch_roll_spi_reference.ino
-│   └── multi_report_spi_reference.ino
+│   ├── geomagnetic_quaternion/
+│   │   └── geomagnetic_quaternion.ino Geomagnetic Rotation Vector
+│   ├── rotation_vector_spi_reference/
+│   │   └── rotation_vector_spi_reference.ino
+│   ├── quaternion_yaw_pitch_roll_spi_reference/
+│   │   └── quaternion_yaw_pitch_roll_spi_reference.ino
+│   └── multi_report_spi_reference/
+│       └── multi_report_spi_reference.ino
 └── third_party/
     └── Adafruit_BNO08x/               Adafruit公式リポジトリ（submodule）
         ├── README.md
@@ -53,8 +55,7 @@ Git内部の管理ファイルとローカル環境用のディレクトリは�
 
 | フォルダー | 内容 |
 |---|---|
-| `sketches/` | 加速度・ジャイロ・磁気・クォータニオンをデータごとに単独取得する動作確認用スケッチ。取得周期を変更したときの挙動や測定精度を確認するため、受信値を単位付きで1サンプル1行に表示します。 |
-| `src/` | Adafruit BNO08xライブラリの公式exampleを基に、SPI接続やピン設定、出力を一部変更した参考サンプル。クォータニオンからYaw・Pitch・Rollへの変換や、複数レポートの表示を含みます。 |
+| `sketches/` | 加速度・ジャイロ・磁気・クォータニオンをデータごとに単独取得する動作確認用スケッチ。取得周期を変更したときの挙動や測定精度を確認するため、受信値を単位付きで1サンプル1行に表示します。公式exampleをSPI用に変更した参考サンプルも含みます。 |
 | `third_party/Adafruit_BNO08x/` | Adafruit公式リポジトリをsubmoduleで管理。未変更の公式サンプルは`examples/`、公式ライセンスは`license.txt`を参照します。 |
 
 ## 公式サンプルの取得
@@ -73,19 +74,19 @@ git submodule update --init --recursive
 
 公式サンプルは [third_party/Adafruit_BNO08x/examples/](third_party/Adafruit_BNO08x/examples/) にあります。`rotation_vector`、`quaternion_yaw_pitch_roll`、`more_reports`の各フォルダー内の同名`.ino`をArduino IDEで開けます。ライブラリと依存ライブラリはArduino IDEのライブラリマネージャーでインストールしてください。
 
-公式コードの著作権表示・利用条件は同梱の [license.txt](third_party/Adafruit_BNO08x/license.txt) を参照してください。自分用に変更するスケッチは`sketches/`または`src/`で管理します。
+公式コードの著作権表示・利用条件は同梱の [license.txt](third_party/Adafruit_BNO08x/license.txt) を参照してください。自分用に変更するスケッチは`sketches/`で管理します。
 
-`sketches/`には校正済みの加速度・角速度・磁場と、3種類のクォータニオンの計6スケッチがあります。校正と単位換算はセンサー・ライブラリが行い、スケッチ側では角度への変換などを追加しません。
+`sketches/`には校正済みの加速度・角速度・磁場と、3種類のクォータニオンの計6スケッチと、公式exampleをSPI接続用に変更した3つの参考サンプルがあります。単独取得の6スケッチでは校正と単位換算はセンサー・ライブラリが行い、角度への変換などは追加しません。
 
 個別のセンサーデータを見やすく確認する新しいスケッチは、[sketches/README.md](sketches/README.md)を参照してください。各スケッチはArduino IDE用の同名フォルダーに入っており、取得周期・表示周期・baud rateを先頭の`#define`で変更できます。
 
-## SPI参考サンプル（src）
+## SPI参考サンプル
 
-- [rotation_vector_spi_reference.ino](src/rotation_vector_spi_reference.ino)：Game Rotation Vectorのクォータニオン出力
-- [quaternion_yaw_pitch_roll_spi_reference.ino](src/quaternion_yaw_pitch_roll_spi_reference.ino)：クォータニオンからYaw/Pitch/Rollへ変換
-- [multi_report_spi_reference.ino](src/multi_report_spi_reference.ino)：複数のセンサーレポートを出力
+- [rotation_vector_spi_reference.ino](sketches/rotation_vector_spi_reference/rotation_vector_spi_reference.ino)：Game Rotation Vectorのクォータニオン出力
+- [quaternion_yaw_pitch_roll_spi_reference.ino](sketches/quaternion_yaw_pitch_roll_spi_reference/quaternion_yaw_pitch_roll_spi_reference.ino)：クォータニオンからYaw/Pitch/Rollへ変換
+- [multi_report_spi_reference.ino](sketches/multi_report_spi_reference/multi_report_spi_reference.ino)：複数のセンサーレポートを出力
 
-Arduino IDEでは使用するスケッチ1つだけを、ファイル名と同名のフォルダーに入れて開いてください。3つを同じスケッチとしてコンパイルすると、`setup()`などが重複します。ライブラリは`Adafruit BNO08x`とその依存ライブラリをインストールします。
+Arduino IDEでは使用するサンプルのフォルダー内にある同名の`.ino`を開いてください。各サンプルは単独で使用します。ライブラリは`Adafruit BNO08x`とその依存ライブラリをインストールします。
 
 各スケッチは標準の`SPI`を使います。SCK/MISO/MOSIは選択したボードのデフォルトSPI端子に接続してください。
 
@@ -111,7 +112,7 @@ CS/INT/RSTの初期値はサンプル用です。使用するボードと実際�
 6. 「検証」→「書き込み」を実行します。
 7. シリアルモニタを開き、通信速度を`SERIAL_BAUD_RATE`と同じ値（既定115200 baud）にします。
 
-`src/`の参考サンプルを使う場合は、使用する`.ino`だけをファイル名と同名のフォルダーに入れて開いてください。
+SPI参考サンプルも`sketches/`内の同名フォルダーから開けます。Windowsへコピーする場合はフォルダーごとコピーしてください。
 
 配線や動作の調整は、選んだスケッチ冒頭の`#define`で行います。
 

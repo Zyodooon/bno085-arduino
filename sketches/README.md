@@ -1,6 +1,8 @@
-# 個別のSPI動作確認スケッチ
+# SPI動作確認スケッチ
 
-各フォルダー内の同名 `.ino` をArduino IDEで開きます。Windowsで使う場合はフォルダーごとコピーしてください。各スケッチは単独で動作し、Adafruit BNO08xと依存ライブラリが必要です。既存の `src` のサンプルはそのままです。
+各フォルダー内の同名 `.ino` をArduino IDEで開きます。Windowsで使う場合はフォルダーごとコピーしてください。各スケッチは単独で動作し、Adafruit BNO08xと依存ライブラリが必要です。データを単独取得する6スケッチと、公式exampleをSPI用に変更した3つの参考サンプルを同じ階層に配置しています。
+
+## 単独取得スケッチ
 
 | スケッチ | 取得するデータ | 単位 |
 |---|---|---|
@@ -40,3 +42,13 @@ gyro [rad/s] : x=0.0010    y=-0.0020    z=0.0000
 初期化後のリセット通知は `RESET count : ...` として表示し、レポートを再設定します。繰り返される場合は通信・電源などを確認してください。
 
 SCK/MISO/MOSIはArduinoの型番に応じた標準SPI端子へつなぎます。PS0/PS1はSPI起動時に両方Highである必要があります。基板上の設定も確認してください。
+
+## SPI参考サンプル
+
+公式exampleを基に、SPI接続やピン設定、出力を変更したサンプルです。各フォルダー内の同名`.ino`をArduino IDEで開いてください。設定は各ファイル冒頭を参照してください。
+
+| サンプル | 内容 |
+|---|---|
+| [rotation_vector_spi_reference](rotation_vector_spi_reference/rotation_vector_spi_reference.ino) | Game Rotation Vectorのクォータニオン出力 |
+| [quaternion_yaw_pitch_roll_spi_reference](quaternion_yaw_pitch_roll_spi_reference/quaternion_yaw_pitch_roll_spi_reference.ino) | クォータニオンからYaw・Pitch・Rollへ変換 |
+| [multi_report_spi_reference](multi_report_spi_reference/multi_report_spi_reference.ino) | 複数のセンサーレポートを出力 |
