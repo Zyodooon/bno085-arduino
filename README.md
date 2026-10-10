@@ -2,12 +2,78 @@
 
 Arduino IDEを使ってBNO08xセンサーとのSPI通信、取得周期、測定精度を確認するためのリポジトリです。Adafruit BNO08xライブラリの公式exampleを基にしています。
 
+## ファイル・ディレクトリ構成
+
+```text
+bno085-bringup/
+├── README.md                          このリポジトリの使い方
+├── .gitignore                         Git管理から除外する設定
+├── .gitmodules                        公式リポジトリのsubmodule設定
+├── docs/                              データシート・参考資料
+│   ├── adafruit-bno085-guide.pdf
+│   ├── bno08x-ceva-datasheet.pdf
+│   └── bno085-summary-ja.md
+├── sketches/                          データごとの動作確認用スケッチ
+│   ├── README.md                      各スケッチの説明・設定方法
+│   ├── accelerometer/
+│   │   └── accelerometer.ino          加速度
+│   ├── gyro/
+│   │   └── gyro.ino                   角速度
+│   ├── magnetometer/
+│   │   └── magnetometer.ino           磁場
+│   ├── quaternion/
+│   │   └── quaternion.ino             Rotation Vector
+│   ├── game_quaternion/
+│   │   └── game_quaternion.ino        Game Rotation Vector
+│   └── geomagnetic_quaternion/
+│       └── geomagnetic_quaternion.ino Geomagnetic Rotation Vector
+├── src/                               SPI接続用に変更した参考サンプル
+│   ├── rotation_vector_spi_reference.ino
+│   ├── quaternion_yaw_pitch_roll_spi_reference.ino
+│   └── multi_report_spi_reference.ino
+└── third_party/
+    └── Adafruit_BNO08x/               Adafruit公式リポジトリ（submodule）
+        ├── README.md
+        ├── license.txt               公式コードのライセンス
+        ├── src/                      公式ライブラリ本体
+        ├── examples/                 未変更の公式サンプル
+        │   ├── rotation_vector/
+        │   │   └── rotation_vector.ino
+        │   ├── quaternion_yaw_pitch_roll/
+        │   │   └── quaternion_yaw_pitch_roll.ino
+        │   ├── more_reports/
+        │   │   └── more_reports.ino
+        │   └── ...
+        └── ...
+```
+
+Git内部の管理ファイルとローカル環境用のディレクトリは省略しています。公式リポジトリ内は主要なファイル・ディレクトリのみ記載しています。
+
 ## スケッチの構成
 
 | フォルダー | 内容 |
 |---|---|
 | `sketches/` | 加速度・ジャイロ・磁気・クォータニオンをデータごとに単独取得する動作確認用スケッチ。取得周期を変更したときの挙動や測定精度を確認するため、受信値を単位付きで1サンプル1行に表示します。 |
 | `src/` | Adafruit BNO08xライブラリの公式exampleを基に、SPI接続やピン設定、出力を一部変更した参考サンプル。クォータニオンからYaw・Pitch・Rollへの変換や、複数レポートの表示を含みます。 |
+| `third_party/Adafruit_BNO08x/` | Adafruit公式リポジトリをsubmoduleで管理。未変更の公式サンプルは`examples/`、公式ライセンスは`license.txt`を参照します。 |
+
+## 公式サンプルの取得
+
+公式リポジトリ [Adafruit_BNO08x](https://github.com/adafruit/Adafruit_BNO08x) をsubmoduleとして取り込み、使用するコミットを固定しています。cloneするときは次のように取得してください。
+
+```bash
+git clone --recurse-submodules <このリポジトリのURL>
+```
+
+すでにclone済みの場合は、リポジトリのルートで実行します。
+
+```bash
+git submodule update --init --recursive
+```
+
+公式サンプルは [third_party/Adafruit_BNO08x/examples/](third_party/Adafruit_BNO08x/examples/) にあります。`rotation_vector`、`quaternion_yaw_pitch_roll`、`more_reports`の各フォルダー内の同名`.ino`をArduino IDEで開けます。ライブラリと依存ライブラリはArduino IDEのライブラリマネージャーでインストールしてください。
+
+公式コードの著作権表示・利用条件は同梱の [license.txt](third_party/Adafruit_BNO08x/license.txt) を参照してください。自分用に変更するスケッチは`sketches/`または`src/`で管理します。
 
 `sketches/`には校正済みの加速度・角速度・磁場と、3種類のクォータニオンの計6スケッチがあります。校正と単位換算はセンサー・ライブラリが行い、スケッチ側では角度への変換などを追加しません。
 
