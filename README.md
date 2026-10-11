@@ -51,6 +51,23 @@ bno085-bringup/
 
 Git内部の管理ファイルとローカル環境用のディレクトリは省略しています。公式リポジトリ内は主要なファイル・ディレクトリのみ記載しています。
 
+## GY-ICM20948V2基板とArduino Uno R4の配線
+
+次の表は、写真の紫色の **GY-ICM20948V2（ICM-20948）基板**をUno R4へSPI接続する場合の配線です。Adafruit BNO085基板とは別のセンサー基板なので、下記のBNO085用スケッチは適用できません。
+
+| GY-ICM20948V2基板の印字（SPI信号名） | Arduino Uno R4 |
+|---|---|
+| VCC（電源） | 3.3V |
+| GND（グラウンド） | GND |
+| SCL（SCK） | D13（SCK） |
+| SDA（SDI / MOSI） | D11（MOSI） |
+| ADO（SDO / MISO） | D12（MISO） |
+| NCS（CS） | D10（SS / CS） |
+| INT（割り込み） | D2 |
+| EDA、ECL、FSYNC | 未接続 |
+
+SPIではSDAがセンサーへのデータ入力（SDI/MOSI）、ADOがセンサーからのデータ出力（SDO/MISO）です。電源電圧は基板の仕様を確認してください。
+
 ## スケッチの構成
 
 | フォルダー | 内容 |
