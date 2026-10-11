@@ -3,7 +3,7 @@
 #define SERIAL_BAUD_RATE 115200
 #define REPORT_INTERVAL_US 5000UL  // センサーへの要求周期: 5 ms = 200 Hz
 #define PRINT_INTERVAL_MS 100UL     // 通常表示の周期: 100 ms = 最大10行/秒
-#define PLOT_INTERVALS 1            // 1なら受信間隔をSerial Plotterへ出力
+#define PLOT_INTERVALS 0            // 1:受信間隔を出力、0:センサー値を表示（既定）
 #define DECIMAL_PLACES 4            // 小数点以下の表示桁数
 #define BNO08X_CS 10
 #define BNO08X_INT 2

@@ -1,9 +1,21 @@
-// 磁気を使う姿勢クォータニオンをSPIで単独取得する。既存サンプルとは独立したスケッチ。
+// 校正済み磁場をSPIで単独取得する。既存サンプルとは独立したスケッチ。
+//
+// 値が表示されるまでの処理:
+// 1. BNO08x内部で磁場の測定値に校正を適用する。
+//    周囲の磁性体などによるずれを補正する処理で、詳細な係数・計算はセンサーに任せる。
+// 2. SH2_MAGNETIC_FIELD_CALIBRATEDレポートは、校正済み磁場をQ4形式の符号付き整数で送る。
+// 3. Adafruitライブラリが各軸を「レポート整数 / 16.0」でuT（マイクロテスラ）に換算する。
+//    例: レポート整数が800なら、800 / 16 = 50 uT。
+//    この整数はRaw MagnetometerのADCカウントとは別で、Raw値を16で割る意味ではない。
+// 4. このスケッチは換算済みのsensorValue.un.magneticField.x/y/zをそのまま表示する。
+//    方位角への変換はしない。
+// 換算処理の参照: https://github.com/adafruit/Adafruit_BNO08x/blob/master/src/sh2_SensorValue.c
+//
 // ===== 変更する設定（周期は単位に注意） =====
 #define SERIAL_BAUD_RATE 115200
 #define REPORT_INTERVAL_US 5000UL  // センサーへの要求周期: 5 ms = 200 Hz
 #define PRINT_INTERVAL_MS 100UL     // 通常表示の周期: 100 ms = 最大10行/秒
-#define PLOT_INTERVALS 1            // 1なら受信間隔をSerial Plotterへ出力
+#define PLOT_INTERVALS 0            // 1:受信間隔を出力、0:センサー値を表示（既定）
 #define DECIMAL_PLACES 4            // 小数点以下の表示桁数
 #define BNO08X_CS 10
 #define BNO08X_INT 2
@@ -28,10 +40,10 @@ uint32_t resetCount = 0;
 bool hasPrinted = false;
 bool hasSample = false;         // 前回時刻があり、間隔を計算できるか
 
-// Rotation Vectorレポートを指定周期で出すようセンサーに要求する。
+// 校正済み磁場レポートを指定周期で出すようセンサーに要求する。
 void setReports() {
-  if (!bno08x.enableReport(SH2_ROTATION_VECTOR, REPORT_INTERVAL_US)) {
-    Serial.println(F("ERROR: could not enable quaternion report"));
+  if (!bno08x.enableReport(SH2_MAGNETIC_FIELD_CALIBRATED, REPORT_INTERVAL_US)) {
+    Serial.println(F("ERROR: could not enable magnetometer report"));
   }
 }
 
@@ -41,7 +53,7 @@ void setup() {
 #if PLOT_INTERVALS
   Serial.println(F("interval_us"));
 #else
-  Serial.println(F("SPI / quaternion / unit: unitless"));
+  Serial.println(F("SPI / magnetometer / unit: uT"));
   Serial.print(F("Requested report interval [us]: "));
   Serial.println(REPORT_INTERVAL_US);
   Serial.print(F("Print interval [ms]: "));
@@ -72,7 +84,7 @@ void loop() {
     setReports();
   }
   if (!bno08x.getSensorEvent(&sensorValue) ||
-      sensorValue.sensorId != SH2_ROTATION_VECTOR) {
+      sensorValue.sensorId != SH2_MAGNETIC_FIELD_CALIBRATED) {
     return;
   }
   // PLOT_INTERVALS=1では受信間隔を出力する。
@@ -89,15 +101,13 @@ void loop() {
   if (hasPrinted && nowMs - lastPrintMs < PRINT_INTERVAL_MS) { return; }
   lastPrintMs = nowMs;
   hasPrinted = true;
-  Serial.print(F("quaternion [unitless] : "));
-  Serial.print(F("w="));
-  Serial.print(sensorValue.un.rotationVector.real, DECIMAL_PLACES);
-  Serial.print(F("\tx="));
-  Serial.print(sensorValue.un.rotationVector.i, DECIMAL_PLACES);
+  Serial.print(F("magnetometer [uT] : "));
+  Serial.print(F("x="));
+  Serial.print(sensorValue.un.magneticField.x, DECIMAL_PLACES);
   Serial.print(F("\ty="));
-  Serial.print(sensorValue.un.rotationVector.j, DECIMAL_PLACES);
+  Serial.print(sensorValue.un.magneticField.y, DECIMAL_PLACES);
   Serial.print(F("\tz="));
-  Serial.print(sensorValue.un.rotationVector.k, DECIMAL_PLACES);
+  Serial.print(sensorValue.un.magneticField.z, DECIMAL_PLACES);
   Serial.println();
 #endif
 }
